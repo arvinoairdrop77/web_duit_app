@@ -16,14 +16,14 @@ DB_CONFIG = {
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-def get_db():
-    if DATABASE_URL:
-        return psycopg2.connect(DATABASE_URL, sslmode='require')
-    else:
-        return psycopg2.connect(**DB_CONFIG)
-
 #def get_db():
-#    return psycopg2.connect(**DB_CONFIG)
+#    if DATABASE_URL:
+#        return psycopg2.connect(DATABASE_URL, sslmode='require')
+#    else:
+#        return psycopg2.connect(**DB_CONFIG)
+
+def get_db():
+    return psycopg2.connect(**DB_CONFIG)
 
 # --- RUTE HALAMAN LOGIN ---
 @app.route('/login', methods=['GET', 'POST'])
