@@ -4,305 +4,231 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financely - Pencatatan Keuangan</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: #f8fafc;
-            color: #334155;
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        .header {
-            margin-bottom: 30px;
-        }
-        .header h1 {
-            font-size: 32px;
-            font-weight: 800;
-            color: #2563eb;
-            letter-spacing: -0.5px;
-        }
-        .header p {
-            font-size: 14px;
-            color: #64748b;
-            margin-top: 4px;
-        }
-
-        /* Summary Cards */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .card-summary {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-        .card-summary span {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #94a3b8;
-            letter-spacing: 0.5px;
-        }
-        .card-summary h2 {
-            font-size: 28px;
-            margin-top: 10px;
-            font-weight: 700;
-        }
-        .text-green { color: #16a34a; }
-        .text-red { color: #dc2626; }
-        .text-blue { color: #2563eb; }
-
-        /* Main Grid (Form & Table Layout) */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 360px 1fr;
-            gap: 24px;
-            align-items: start;
-        }
-
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card-box {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-        .card-box h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 20px;
-        }
-
-        /* Form Controls */
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            color: #64748b;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-        .form-control {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-            background-color: #fff;
-            transition: all 0.2s;
-        }
-        .form-control:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        .form-row {
-            display: flex;
-            gap: 12px;
-        }
-        .form-row .form-group {
-            flex: 1;
-        }
-        .btn-submit {
-            width: 100%;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-top: 8px;
-        }
-        .btn-submit:hover {
-            background-color: #1d4ed8;
-        }
-
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-        th {
-            font-size: 11px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e2e8f0;
-            letter-spacing: 0.5px;
-        }
-        td {
-            padding: 16px 0;
-            font-size: 14px;
-            border-bottom: 1px solid #f1f5f9;
-            color: #334155;
-        }
-        .empty-state {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 14px;
-            padding: 40px 0;
-        }
-        .val-pemasukan {
-            color: #16a34a;
-            font-weight: 600;
-        }
-        .val-pengeluaran {
-            color: #dc2626;
-            font-weight: 600;
-        }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card-summary { border: 1px solid #e9ecef; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .text-pemasukan { color: #28a745; }
+        .text-pengeluaran { color: #dc3545; }
+        .text-saldo { color: #0d6efd; }
+        .header-profile { background-color: #ffffff; padding: 6px 14px; border-radius: 20px; border: 1px solid #e9ecef; }
     </style>
 </head>
-<body>
-
-    <!-- Header -->
-    <div class="header">
-        <h1>Finance</h1>
-        <p>Pencatatan Keuangan Bulanan</p>
-	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-   		 <h1></h1>
-    		<a href="/logout" style="color: #ef4444; text-decoration: none; font-size: 14px; font-weight: 600;">Logout</a>
-	</div>
-    </div>
-
-    <!-- Summary Cards -->
-    <div class="summary-grid">
-        <div class="card-summary">
-            <span>TOTAL PEMASUKAN</span>
-            <h2 class="text-green">Rp {{ "{:,.0f}".format(summary[0]).replace(',', '.') if summary else '0' }}</h2>
+<body class="py-4">
+    <div class="container" style="max-width: 1100px;">
+        
+        <!-- HEADER UTAMA & PROFIL -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fw-bold text-primary mb-0" style="font-size: 2rem;">Monthly Finances</h1>
+                <p class="text-muted mb-0 small">Pencatatan Keuangan Bulanan</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="header-profile d-flex align-items-center gap-2">
+                    <i class="bi bi-person-circle text-primary fs-5"></i>
+                    <span class="fw-semibold text-secondary">Halo, <strong class="text-dark">{{ session['username'] }}</strong></span>
+                </div>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-semibold">
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                </a>
+            </div>
         </div>
-        <div class="card-summary">
-            <span>TOTAL PENGELUARAN</span>
-            <h2 class="text-red">Rp {{ "{:,.0f}".format(summary[1]).replace(',', '.') if summary else '0' }}</h2>
-        </div>
-        <div class="card-summary">
-            <span>SISA SALDO</span>
-            <h2 class="text-blue">Rp {{ "{:,.0f}".format(summary[2]).replace(',', '.') if summary else '0' }}</h2>
-        </div>
-    </div>
 
-    <!-- Main Content -->
-    <div class="main-grid">
-
-        <!-- Form Input -->
-        <div class="card-box">
-            <h3>Catat Transaksi Baru</h3>
-            <form action="/" method="POST">
-                <div class="form-group">
-                    <label>TANGGAL</label>
-                    <input type="date" id="tanggal" name="tanggal" class="form-control" required>
+        <!-- FILTER PERIODE -->
+        <div class="card card-summary mb-4 bg-white p-3">
+            <form method="GET" action="{{ url_for('index') }}" class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <label class="col-form-label fw-bold text-secondary"><i class="bi bi-funnel-fill me-1"></i> Periode Laporan:</label>
                 </div>
-
-                <div class="form-group">
-                    <label>KETERANGAN</label>
-                    <input type="text" name="keterangan" class="form-control" placeholder="Gaji, Beli Kopi, Token Listrik" required>
+                <div class="col-auto">
+                    <select name="bulan" class="form-select form-select-sm fw-semibold">
+                        {% for b_val, b_nama in nama_bulan %}
+                            <option value="{{ b_val }}" {% if b_val == bulan_selected %}selected{% endif %}>{{ b_nama }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>JENIS</label>
-                        <select name="jenis" class="form-control" required>
-                            <option value="Pengeluaran">Pengeluaran</option>
-                            <option value="Pemasukan">Pemasukan</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>KATEGORI</label>
-                        <select name="id_kategori" class="form-control" required>
-                            {% for k in kategori_list %}
-                            <option value="{{ k[0] }}">{{ k[1] }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div class="col-auto">
+                    <select name="tahun" class="form-select form-select-sm fw-semibold">
+                        {% for t in daftar_tahun %}
+                            <option value="{{ t }}" {% if t == tahun_selected %}selected{% endif %}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-
-                <div class="form-group">
-                    <label>JUMLAH NOMINAL (RP)</label>
-                    <input type="number" name="nominal" class="form-control" placeholder="0" min="0" step="any" required>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary btn-sm px-3 rounded">Tampilkan</button>
                 </div>
-
-                <button type="submit" class="btn-submit">Simpan Transaksi</button>
             </form>
         </div>
 
-        <!-- Tabel Riwayat -->
-        <div class="card-box">
-            <h3>Riwayat Transaksi</h3>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>TANGGAL</th>
-                            <th>KETERANGAN</th>
-                            <th>KATEGORI</th>
-                            <th style="text-align: right;">JUMLAH</th>
-		  	    <th style="text-align: center;">AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if transaksi_list %}
-                            {% for t in transaksi_list %}
-                            <tr>
-                                <td>{{ t[1].strftime('%d/%m/%Y') if t[1] else '' }}</td>
-                                <td>{{ t[2] }}</td>
-                                <td>{{ t[3] or '-' }}</td>
-                                <td style="text-align: right;" class="{{ 'val-pemasukan' if t[4] == 'Pemasukan' else 'val-pengeluaran' }}">
-                                    {{ '+' if t[4] == 'Pemasukan' else '-' }} Rp {{ "{:,.0f}".format(t[5]).replace(',', '.') }}
-                                </td>
-				<td style="text-align: center;">
-                		    <a href="/hapus/{{ t[0] }}" onclick="return confirm('Yakin ingin menghapus transaksi ini?');" style="color: #dc2626; text-decoration: none; font-weight: 600; font-size: 13px;">Hapus</a>
-            			</td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="empty-state">Belum ada transaksi tercatat.</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+        <!-- RINGKASAN SALDO -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card card-summary bg-white p-3">
+                    <span class="text-muted small fw-bold text-uppercase">Total Pemasukan</span>
+                    <h3 class="fw-bold text-pemasukan mb-0 mt-1">Rp {{ "{:,.0f}".format(summary[0]).replace(',', '.') }}</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-summary bg-white p-3">
+                    <span class="text-muted small fw-bold text-uppercase">Total Pengeluaran</span>
+                    <h3 class="fw-bold text-pengeluaran mb-0 mt-1">Rp {{ "{:,.0f}".format(summary[1]).replace(',', '.') }}</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-summary bg-white p-3">
+                    <span class="text-muted small fw-bold text-uppercase">Sisa Saldo</span>
+                    <h3 class="fw-bold text-saldo mb-0 mt-1">Rp {{ "{:,.0f}".format(summary[2]).replace(',', '.') }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- KONTEN UTAMA -->
+        <div class="row g-4">
+            <!-- FORM INPUT -->
+            <div class="col-md-4">
+                <div class="card card-summary bg-white p-4 mb-4">
+                    <h5 class="fw-bold mb-3">Catat Transaksi Baru</h5>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Tanggal</label>
+                            <input type="date" name="tanggal" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Keterangan</label>
+                            <input type="text" name="keterangan" class="form-control" placeholder="Gaji, Beli Kopi, Token Listrik" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Jenis</label>
+                                <select name="jenis" class="form-select" required>
+                                    <option value="Pengeluaran">Pengeluaran</option>
+                                    <option value="Pemasukan">Pemasukan</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Kategori</label>
+                                <select name="id_kategori" class="form-select" required>
+                                    {% for k in kategori_list %}
+                                        <option value="{{ k[0] }}">{{ k[1] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Jumlah Nominal (Rp)</label>
+                            <input type="number" name="nominal" class="form-control" placeholder="0" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Simpan Transaksi</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- CHART & RIWAYAT TRANSAKSI -->
+            <div class="col-md-8">
+                <!-- CHART CARD -->
+                <div class="card card-summary bg-white p-4 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Persentase Pengeluaran per Kategori</h5>
+                    {% if chart_values %}
+                        <div style="max-height: 260px;" class="d-flex justify-content-center">
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4 mb-0">Belum ada pengeluaran pada periode ini untuk ditampilkan grafik.</p>
+                    {% endif %}
+                </div>
+
+                <!-- TABLE CARD -->
+                <div class="card card-summary bg-white p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-receipt me-2 text-primary"></i>Riwayat Transaksi</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="small text-muted text-uppercase">Tanggal</th>
+                                    <th class="small text-muted text-uppercase">Keterangan</th>
+                                    <th class="small text-muted text-uppercase">Kategori</th>
+                                    <th class="small text-muted text-uppercase text-end">Jumlah</th>
+                                    <th class="small text-muted text-uppercase text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if transaksi_list %}
+                                    {% for row in transaksi_list %}
+                                    <tr>
+                                        <td>{{ row[1].strftime('%d/%m/%Y') if row[1] else '' }}</td>
+                                        <td class="fw-semibold">{{ row[2] }}</td>
+                                        <td><span class="badge bg-light text-dark border">{{ row[3] }}</span></td>
+                                        <td class="text-end fw-bold {% if row[4] == 'Pemasukan' %}text-pemasukan{% else %}text-pengeluaran{% endif %}">
+                                            {% if row[4] == 'Pemasukan' %}+{% else %}-{% endif %} Rp {{ "{:,.0f}".format(row[5]).replace(',', '.') }}
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{{ url_for('hapus_transaksi', id_transaksi=row[0]) }}" class="btn btn-link text-danger p-0 ms-2" onclick="return confirm('Hapus transaksi ini?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">Belum ada transaksi pada periode yang dipilih.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
 
+    <!-- JAVASCRIPT RENDER CHART.JS -->
+    {% if chart_values %}
     <script>
-        // Mengatur input tanggal default ke hari ini secara otomatis
-        document.getElementById('tanggal').valueAsDate = new Date();
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        const expenseChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ chart_labels | tojson }},
+                datasets: [{
+                    data: {{ chart_values | tojson }},
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+                        '#9966FF', '#FF9F40', '#E7E9ED', '#2ECC71'
+                    ],
+                    borderWidth: 2,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: { size: 12, family: "'Segoe UI', sans-serif" }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed !== null) {
+                                    label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(context.parsed);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     </script>
+    {% endif %}
 </body>
 </html>
-
