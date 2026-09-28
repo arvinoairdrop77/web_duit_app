@@ -1,21 +1,40 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+import os
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import psycopg2
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'wongikijanepekok'
+app.secret_key = os.environ.get('SECRET_KEY', 'wongikijanepekok')
 
-DB_CONFIG = {
-    'dbname': 'db_duit_app',
-    'user': 'arvino',
-    'password': 'gatya123',
-    'host': '127.0.0.1',
-    'port': '5432'
-}
+DATABASE_URL = os.environ.get('DATABASE_URL', 'dbname=db_duit_app user=arvino password=gatya123 host=127.0.0.1 port=5432')
 
 def get_db():
-    return psycopg2.connect(**DB_CONFIG)
+    return psycopg2.connect(DATABASE_URL)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        hashed_password = generate_password_hash(password)
+
+        conn = get_db()
+        cur = conn.cursor()
+        try:
+            cur.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return redirect(url_for('login'))
+        except psycopg2.IntegrityError:
+            conn.rollback()
+            error = 'Username sudah terdaftar! Gunakan username lain.'
+            cur.close()
+            conn.close()
+
+    return render_template('register.html', error=error)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -75,7 +94,6 @@ def index():
     bulan_selected = request.args.get('bulan', type=int, default=today.month)
     tahun_selected = request.args.get('tahun', type=int, default=today.year)
 
-    # 1. Ringkasan Kartu
     cur.execute("""
         SELECT
             COALESCE(SUM(CASE WHEN jenis = 'Pemasukan' THEN nominal ELSE 0 END), 0),
@@ -88,11 +106,9 @@ def index():
     """, (user_id, bulan_selected, tahun_selected))
     summary = cur.fetchone()
 
-    # 2. Daftar Kategori
     cur.execute("SELECT id_kategori, nama_kategori, jenis FROM kategori ORDER BY nama_kategori ASC")
     kategori_list = cur.fetchall()
 
-    # 3. Riwayat Transaksi
     cur.execute("""
         SELECT t.id_transaksi, t.tanggal, t.keterangan, k.nama_kategori, t.jenis, t.nominal
         FROM transaksi t
@@ -104,7 +120,6 @@ def index():
     """, (user_id, bulan_selected, tahun_selected))
     transaksi_list = cur.fetchall()
 
-    # 4. Data untuk Chart.js (Total Pengeluaran per Kategori)
     cur.execute("""
         SELECT k.nama_kategori, COALESCE(SUM(t.nominal), 0)
         FROM transaksi t
